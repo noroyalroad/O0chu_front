@@ -13,13 +13,13 @@ function StarRatingList({ rating, onStarClick, movie_id }) {
   };
 
   return (
-    <p>
+    <p className="marT_10">
       {Array.from({ length: maxStars }).map((_, index) => (
         <FaStar className="cuP" key={index} color="#ffc107" size={24} style={{ color: index < yellowStars ? "yellow" : "gray" }}>
           &#9733; {/* 별 이모지 */}
         </FaStar>
       ))}
-      <h3 className="marL_10">별점: {rating} / 5</h3>
+      {rating === 0 ? <span className="marL_10">별점이 없습니다.</span> : <h3 style={{ color: "#fff", textAlign: "center" }}>별점: {rating} / 5</h3>}
     </p>
   );
 }

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { click } from "../_actions/click_action";
 import { useDispatch, useSelector } from "react-redux";
+import Gettotalstar from "../detail/Gettotalstar";
 
 const Searchitem = (props) => {
   const nav = useNavigate();
@@ -38,6 +39,7 @@ const Searchitem = (props) => {
                     {item.poster_path === "default_poster_url_here" || item.poster_path === "" ? <img src="/image/postrer.png" alt="포스터" /> : <img src={item.poster_path} alt="포스터" />}
                     <div>
                       <h3>{item.kr_title}</h3>
+                      <Gettotalstar movie_id={item.movie_id} />
                     </div>
                   </a>
                 </li>

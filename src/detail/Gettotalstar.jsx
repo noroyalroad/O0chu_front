@@ -38,11 +38,7 @@ const Gettotalstar = ({ movie_id }) => {
     setRating(newRating);
   };
 
-  return (
-    <p>
-      <StarRatingList rating={rating} onStarClick={handleStarClick} movie_id={movie_id} />
-    </p>
-  );
+  return <p>{rating === 0 ? <h3 style={{ color: "#fff", textAlign: "center" }}>등록 된 별점 없음</h3> : <StarRatingList rating={rating} onStarClick={handleStarClick} movie_id={movie_id} />}</p>;
 };
 
 export default Gettotalstar;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+import Gettotalstar from "../detail/Gettotalstar";
 
 function Newlist({ movie, id }) {
   const [newlist, setnewlist] = useState([]);
@@ -89,6 +90,7 @@ function Newlist({ movie, id }) {
                       {item.poster_path === "default_poster_url_here" ? <img src="/image/postrer.png" alt="포스터" /> : <img src={item.poster_path} alt="포스터" />}
                       <div>
                         <h3 className="movieTitle">{item.kr_title}</h3>
+                        <Gettotalstar movie_id={item.movie_id} />
                       </div>
                     </a>
                   </li>
