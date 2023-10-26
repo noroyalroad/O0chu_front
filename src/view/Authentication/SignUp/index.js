@@ -5,6 +5,7 @@ import { Box, Button, Card, TextField, Typography, Select, MenuItem, Dialog, Dia
 import { NextClickApi, signUpApi } from "../../../api";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { api } from "../../../config/api";
 
 export default function SignUp(props) {
   // 회원가입 폼 입력값과 오류 상태 변수
@@ -74,7 +75,7 @@ export default function SignUp(props) {
   const handleMovieSearch = async () => {
     if (searchTerm) {
       try {
-        const response = await axios.get(`/api/movie/search/${searchTerm}`);
+        const response = await axios.get(`${api}/api/movie/search/${searchTerm}`);
         console.log(`Requesting: /movie/search/${searchTerm}`);
         if (response.data.length > 0) {
           setSearchResults(response.data);
@@ -256,6 +257,7 @@ export default function SignUp(props) {
       return false;
     } else {
       setPosterError("");
+      return true;
     }
   };
 
@@ -265,6 +267,7 @@ export default function SignUp(props) {
       return false;
     } else {
       setPreference1Error(""); // 선택이 유효한 경우 에러 메시지 초기화
+      return true;
     }
   };
   const validatePreference2 = async () => {
@@ -274,6 +277,7 @@ export default function SignUp(props) {
       return false;
     } else {
       setPreference2Error(""); // 선택이 유효한 경우 에러 메시지 초기화
+      return true;
     }
   };
   const validatePreference3 = async () => {
@@ -283,14 +287,15 @@ export default function SignUp(props) {
       return false;
     } else {
       setPreference3Error(""); // 선택이 유효한 경우 에러 메시지 초기화
+      return true;
     }
   };
 
   const signUpHandler = async () => {
-    await validateSelectedMovie();
-    await validatePreference1();
-    await validatePreference2();
-    await validatePreference3();
+    const isValidMovie = await validateSelectedMovie();
+    const isValidPreference1 = await validatePreference1();
+    const isValidPreference2 = await validatePreference2();
+    const isValidPreference3 = await validatePreference3();
 
     // 로그 추가
     console.log("posterError:", posterError);
@@ -299,7 +304,7 @@ export default function SignUp(props) {
     console.log("preference3Error:", preference3Error);
 
     // 모든 검증을 통과하면 회원가입을 시도
-    if (!posterError && !preference1Error && !preference2Error && !preference3Error) {
+    if (isValidMovie && isValidPreference1 && isValidPreference2 && isValidPreference3) {
       // 로그 추가
       console.log("모든 유효성 검사 통과");
 
