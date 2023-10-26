@@ -46,7 +46,7 @@ export default function NicknameChange(props) {
         alert("변경이 완료되었습니다, 다시 로그인 해주세요.");
         Cookies.remove("token");
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        navigate("/boardmain/MyPage");
+        navigate("/login");
       }
     } catch (error) {
       console.error(error);

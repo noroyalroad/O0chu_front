@@ -56,7 +56,9 @@ export default function PasswordChange(props) {
         alert("변경이 완료되었습니다, 다시 로그인 해주세요.");
         Cookies.remove("token");
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        navigate("/mypage");
+        localStorage.clear();
+
+        navigate("/login");
       }
     } catch (error) {
       console.error(error);

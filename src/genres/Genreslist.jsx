@@ -5,15 +5,18 @@ import Genresitem from "./Genresitem";
 import Footer from "../footer/Footer";
 import Auth from "../hoc/auth";
 import ScrollToTopButton from "../scrolltop/ScrolltoptoButton";
+import ScrollToQuestion from "../scrolltop/ScrolltoQuestion";
 const Genreslist = () => {
   const { genres } = useParams();
-  console.log(genres);
 
   return (
     <div>
       <Header />
       <Genresitem gen={genres} />
-      <ScrollToTopButton />
+      <div className="scroll-to-div">
+        <ScrollToQuestion />
+        <ScrollToTopButton />
+      </div>
       <Footer />
     </div>
   );

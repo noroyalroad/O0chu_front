@@ -35,7 +35,7 @@ const Searchitem = (props) => {
                   }}
                 >
                   <a href="">
-                    <img src={item.poster_path} alt="포스터" />
+                    {item.poster_path === "default_poster_url_here" || item.poster_path === "" ? <img src="/image/postrer.png" alt="포스터" /> : <img src={item.poster_path} alt="포스터" />}
                     <div>
                       <h3>{item.kr_title}</h3>
                     </div>

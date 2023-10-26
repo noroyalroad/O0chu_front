@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Gettotalstar from "../detail/Gettotalstar";
 
 const Suggestionitem = (props) => {
   const { item } = props;
@@ -17,9 +18,10 @@ const Suggestionitem = (props) => {
             }}
           >
             <a href="">
-              <img src={item.poster_path} alt="포스터" />
+              {item.poster_path === "default_poster_url_here" ? <img src="/image/postrer.png" alt="포스터" /> : <img src={item.poster_path} alt="포스터" />}
               <div>
                 <h3>{item.kr_title}</h3>
+                <Gettotalstar movie_id={item.movie_id} />
               </div>
             </a>
           </li>

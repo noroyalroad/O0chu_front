@@ -16,7 +16,7 @@ import { click } from "../_actions/click_action";
 
 function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [nickname, setNickname] = useState("");
   const dispath = useDispatch();
@@ -28,32 +28,33 @@ function Header() {
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    const token = Cookies.get("token"); // 수정: get 메서드 사용
+    // const token = Cookies.get("token"); // 수정: get 메서드 사용
 
     // console.log("쿠키에 설정된 토큰:", token);
 
-    if (token !== undefined) {
-      // 수정: undefined를 확인
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-    if (user !== undefined && user.userData !== undefined) {
+    // if (token !== undefined) {
+    //   // 수정: undefined를 확인
+    //   setIsLoggedIn(true);
+    // } else {
+    //   setIsLoggedIn(false);
+    // }
+    if (user !== undefined && user.userData && user.userData.isAuth) {
       setNickname(user.userData.nickname);
       setRole(user.userData.role);
+      setIsLoggedIn(true);
     }
-  }, [user]);
+  });
 
   const handleLoginClick = () => {
     nav("/login");
   };
 
   const handleLogout = (event) => {
-    console.log(Cookies.get("token"));
     Cookies.remove("token");
     event.preventDefault();
 
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    localStorage.clear();
     window.location.reload();
     //캐시
 
@@ -63,14 +64,14 @@ function Header() {
   return (
     <div>
       <Navbar bg="" expand="lg" className="webSize">
-        <Container>
+        <Container className="mo_dis_ju_c">
           <Link to="/">
             <Navbar.Brand>
               <img src="/image/logo2.png" alt="Logo" />
             </Navbar.Brand>
           </Link>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav" className="rigth">
+
+          <Navbar.Collapse id="basic-navbar-nav" className="rigth mo_dis_bl">
             <Nav className="ml-auto">
               <Search />
               {!isLoggedIn ? (
@@ -89,7 +90,7 @@ function Header() {
                           nav(`/mypage`);
                         }}
                       >
-                        Mypage
+                        {nickname}
                       </DropdownItem>
                     )}
                     {role === "1" && (
@@ -102,7 +103,6 @@ function Header() {
                       </DropdownItem>
                     )}
                     <DropdownItem onClick={handleLogout}>로그아웃</DropdownItem>
-                    <DropdownItem>{nickname}</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               )}
@@ -112,7 +112,7 @@ function Header() {
       </Navbar>
 
       <Navbar bg="" expand="lg" style={{ borderBottom: "2px solid green" }}>
-        <Container>
+        <Container className="cu_nav">
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className="center-collapse">
             <Nav className="center">
@@ -162,7 +162,7 @@ function Header() {
                 }}
               >
                 <FontAwesomeIcon icon={faFaceGrimace} />
-                공포|스릴러
+                공포 | 스릴러
               </Nav.Link>
               <Nav.Link
                 onClick={(event) => {
@@ -211,10 +211,14 @@ function Header() {
                 }}
               >
                 <FontAwesomeIcon icon={faTv} />
-                멜로|드라마
+                멜로 | 드라마
               </Nav.Link>
 
-              <Nav.Link href="#link">
+              <Nav.Link
+                onClick={() => {
+                  nav("/movies/wishlist");
+                }}
+              >
                 <FontAwesomeIcon icon={faStar} />찜
               </Nav.Link>
             </Nav>
@@ -225,4 +229,4 @@ function Header() {
   );
 }
 
-export default Auth(Header);
+export default Header;

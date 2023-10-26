@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Auth from "../hoc/auth";
 import { click } from "../_actions/click_action";
+import Gettotalstar from "../detail/Gettotalstar";
 
 const Genresitemlist = (props) => {
   const { list } = props;
@@ -41,9 +42,12 @@ const Genresitemlist = (props) => {
               }}
             >
               <a href="">
-                <img src={item.poster_path} alt="포스터" />
+                {item.poster_path === "default_poster_url_here" ? <img src="/image/postrer.png" alt="포스터" /> : <img src={item.poster_path} alt="포스터" />}
                 <div>
                   <h3>{item.kr_title}</h3>
+                  <p>
+                    <Gettotalstar movie_id={item.movie_id} />
+                  </p>
                 </div>
               </a>
             </li>

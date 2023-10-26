@@ -32,6 +32,89 @@ export default function SignUp(props) {
   const [preference2Error, setPreference2Error] = useState("");
   const [preference3Error, setPreference3Error] = useState("");
 
+  {
+    /*............................................................................................*/
+  }
+  // 검색어 입력 및 검색 결과 상태 변수 추가
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResultsDialog, setShowSearchResultsDialog] = useState(false);
+
+  // 검색 모달을 띄우기 위한 상태 변수 추가
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
+  const data = {
+    email,
+    password,
+    passwordCheck,
+    name,
+    nickname,
+    gender,
+    age: selectedAge,
+    movieId: selectedMovie.movie_id,
+    preference_1,
+    preference_2,
+    preference_3,
+  };
+
+  const openSearchModal = () => {
+    setShowSearchModal(true);
+  };
+
+  const closeSearchModal = () => {
+    setShowSearchModal(false);
+  };
+
+  // 엔터로 검색가능하게 하기
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    handleMovieSearch();
+  };
+
+  const handleMovieSearch = async () => {
+    if (searchTerm) {
+      try {
+        const response = await axios.get(`/api/movie/search/${searchTerm}`);
+        console.log(`Requesting: /movie/search/${searchTerm}`);
+        if (response.data.length > 0) {
+          setSearchResults(response.data);
+          console.log("Search Results:", response.data);
+          setShowSearchResultsDialog(true);
+        } else {
+          setSearchResults([]);
+          alert("검색 결과가 없습니다.");
+        }
+      } catch (error) {
+        console.error("Error fetching search results", error);
+        alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    } else {
+      alert("검색어를 입력해주세요.");
+    }
+  };
+
+  const handleMovieSelect = (movieId) => {
+    const selected = searchResults.find((movie) => movie.movie_id === movieId);
+    console.log("Selected Movie ID:", selected ? selected.movie_id : "Not found");
+    console.log("Selected Movie:", selected);
+    setSelectedMovie({
+      movie_id: selected.movie_id,
+      kr_title: selected.kr_title,
+      poster_path: selected.poster_path,
+    });
+    setSearchTerm("");
+    setShowSearchResultsDialog(false);
+    setShowSearchModal(false);
+    setPosterError("");
+
+    // 영화가 선택되었을 때 알림창 띄우기
+    window.alert(`선택된 영화 : ${selected.kr_title}`);
+  };
+
+  {
+    /*............................................................................................*/
+  }
+
   // 회원가입 단계를 추적하기 위한 상태 변수
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -41,29 +124,13 @@ export default function SignUp(props) {
 
   const handleLoginClick = () => {
     // 로그인 버튼 클릭 시 다른 페이지로 이동
-    navigate("/login");
+    navigate("/boardmain/SignIn");
   };
 
   useEffect(() => {
     setGender("0");
     setSelectedAge("0");
   }, []);
-
-  const moviePosters = [
-    { id: "299534", url: "https://image.tmdb.org/t/p/w500/z7ilT5rNN9kDo8JZmgyhM6ej2xv.jpg" },
-    { id: "767", url: "https://image.tmdb.org/t/p/w500/yrGlb3HLtjGp39mv4MJ5UuIHcj4.jpg" },
-    { id: "8392", url: "https://image.tmdb.org/t/p/w500/csiklRMzvXRLKtFcIlEDeEU7nWr.jpg" },
-    { id: "924", url: "https://image.tmdb.org/t/p/w500/qqTYdTvdhsWr6vZ72WROS7u7V9r.jpg" },
-    { id: "954", url: "https://image.tmdb.org/t/p/w500/j4Ix3N5GrTrnQVDrA3ss1vwVvtf.jpg" },
-    { id: "4415", url: "https://image.tmdb.org/t/p/w500/3TOgmlIY8X3WjIjvU7Z0jqeNkyU.jpg" },
-    { id: "23827", url: "https://image.tmdb.org/t/p/w500/uNOEIKO1YW2XP9mjSdZ8oaHaRFm.jpg" },
-    { id: "49797", url: "https://image.tmdb.org/t/p/w500/dFGrIdZGJtxm1GG4X1liYbxyjgd.jpg" },
-    { id: "198277", url: "https://image.tmdb.org/t/p/w500/xVXC1mDkjJ1pK9tTFgO2DGPavJj.jpg" },
-    { id: "857", url: "https://image.tmdb.org/t/p/w500/2ATMbU4EljWkWcEJT9TElbQOMYY.jpg" },
-    { id: "12", url: "https://image.tmdb.org/t/p/w500/9ViCYfZ0whpwtKbM2WJP5PfsG2x.jpg" },
-    { id: "862", url: "https://image.tmdb.org/t/p/w500/5ELwzkC7QY9vug20AvRFOXBzLbG.jpg" },
-    // 이하 포스터 정보 추가
-  ];
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -81,102 +148,101 @@ export default function SignUp(props) {
     setSelectedPreferences(updatedSelectedPreferences);
   };
 
-  // 회원가입 두번째 단계로 이동
-  const handleNextClick = async () => {
-    // 이메일, 비밀번호, 이름, 닉네임 유효성 검사
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const nicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|].{1,8}$/;
-    const nameRegex = /^[ㄱ-ㅎ|가-힣].{1,4}$/;
-
-    const data = {
-      email,
-      password,
-      passwordCheck,
-      name,
-      nickname,
-      gender,
-      age: selectedAge,
-      movieId: selectedMovie,
-      preference_1,
-      preference_2,
-      preference_3,
-    };
-
+  const validateEmail = async () => {
     const nextClickResponse = await NextClickApi(data);
-    console.log(nextClickResponse);
+    // 이메일 유효성 검사를 수행
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    // 이메일 유효성 검사
     if (!email) {
       setEmailError("이메일 주소를 입력해주세요.");
-      return;
     } else if (!emailRegex.test(email)) {
       setEmailError("유효한 이메일 형식을 입력해주세요.");
-      return;
     } else if (nextClickResponse.message === "Email already in use") {
       setEmailError("중복된 이메일입니다.");
-      return;
     } else {
       setEmailError("");
     }
+  };
 
-    // 비밀번호 유효성 검사
-    if (!password) {
-      setPasswordError("비밀번호를 입력해주세요.");
-      return;
-    } else if (!passwordRegex.test(password)) {
-      setPasswordError("비밀번호는 최소 8자 이상, 영문자와 숫자, 특수 문자를 포함해야 합니다.");
-      return;
-    } else {
-      setPasswordError("");
-    }
+  const validateNickname = async () => {
+    const nextClickResponse = await NextClickApi(data);
 
-    // 비밀번호 일치 여부 검사
-    if (password !== passwordCheck) {
-      setPasswordMatchError("비밀번호가 일치하지 않습니다.");
-      return;
-    } else {
-      setPasswordMatchError("");
-    }
-
-    // 이름 유효성 검사
-    if (!name) {
-      setNameError("이름을 입력해주세요.");
-      return;
-    } else if (!nameRegex.test(name) || name.length < 1 || name.length >= 5) {
-      setNameError("1글자 이상 5글자 미만 한글만 입력 가능합니다.");
-      return;
-    } else {
-      setNameError("");
-    }
-
+    // 닉네임 유효성 검사를 수행
+    const nicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|].{1,8}$/;
     // 닉네임 유효성 검사
     if (!nickname) {
       setNickNameError("닉네임을 입력해주세요.");
-      return;
     } else if (!nicknameRegex.test(nickname)) {
       setNickNameError("1글자 이상 9글자 미만으로 입력해주세요.");
-      return;
     } else if (nextClickResponse.message === "Nickname already in use") {
       setNickNameError("중복된 닉네임입니다.");
-      return;
     } else {
       setNickNameError("");
     }
+  };
 
+  const validateName = () => {
+    // 이름 유효성 검사를 수행
+    const nameRegex = /^[ㄱ-ㅎ|가-힣].{1,4}$/;
+    // 이름 유효성 검사
+    if (!name) {
+      setNameError("이름을 입력해주세요.");
+    } else if (!nameRegex.test(name) || name.length < 1 || name.length >= 5) {
+      setNameError("1글자 이상 5글자 미만 한글만 입력 가능합니다.");
+    } else {
+      setNameError("");
+    }
+  };
+
+  const validatePassword = () => {
+    // 비밀번호 유효성 검사를 수행
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    // 비밀번호 유효성 검사
+    if (!password) {
+      setPasswordError("비밀번호를 입력해주세요.");
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError("비밀번호는 최소 8자 이상, 영문자와 숫자, 특수 문자를 포함해야 합니다.");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const validatePasswordMatch = () => {
+    // 비밀번호 일치 여부 검사
+    if (!password) {
+      setPasswordMatchError("비밀번호를 입력해주세요.");
+    } else if (password !== passwordCheck) {
+      setPasswordMatchError("비밀번호가 일치하지 않습니다.");
+    } else {
+      setPasswordMatchError("");
+    }
+  };
+
+  const validateGender = () => {
     if (gender === "0") {
       setGenderError("성별을 선택해주세요."); // Set the error message
-      return;
     } else {
       setGenderError(""); // Clear the error message if gender is selected
     }
+  };
 
+  const validateAge = () => {
     if (selectedAge === "0") {
       setAgeError("연령대를 선택해주세요."); // Set the error message
-      return;
     } else {
       setAgeError(""); // Clear the error message if age is selected
     }
+  };
+
+  // 회원가입 두번째 단계로 이동
+  const handleNextClick = async () => {
+    await validateEmail();
+    validatePassword();
+    validatePasswordMatch();
+    validateName();
+    await validateNickname();
+    validateGender();
+    validateAge();
 
     // 모든 필수 정보가 올바르게 입력되었을 때 다음 단계로 이동
     if (currentStep === 1 && !emailError && !passwordError && !passwordMatchError && !nameError && !nicknameError && !genderError && !ageError) {
@@ -184,63 +250,73 @@ export default function SignUp(props) {
     }
   };
 
-  const signUpHandler = async () => {
-    // API 호출을 위한 데이터 준비
-    const data = {
-      email,
-      password,
-      passwordCheck,
-      name,
-      nickname,
-      gender,
-      age: selectedAge,
-      movieId: selectedMovie,
-      preference_1,
-      preference_2,
-      preference_3,
-    };
-
+  const validateSelectedMovie = async () => {
     if (!selectedMovie) {
       setPosterError("영화를 선택하세요.");
-      return;
+      return false;
     } else {
       setPosterError("");
     }
+  };
 
+  const validatePreference1 = async () => {
     if (preference_1 === "0") {
       setPreference1Error("영화를 볼 때 우선적으로 생각하는 것 1순위를 선택하세요.");
-      return;
+      return false;
     } else {
       setPreference1Error(""); // 선택이 유효한 경우 에러 메시지 초기화
     }
-
+  };
+  const validatePreference2 = async () => {
     // 2순위 장르 선택
     if (preference_2 === "0") {
       setPreference2Error("영화를 볼 때 우선적으로 생각하는 것 2순위를 선택하세요.");
-      return;
+      return false;
     } else {
       setPreference2Error(""); // 선택이 유효한 경우 에러 메시지 초기화
     }
-
+  };
+  const validatePreference3 = async () => {
     // 3순위 장르 선택
     if (preference_3 === "0") {
       setPreference3Error("영화를 볼 때 우선적으로 생각하는 것 3순위를 선택하세요.");
-      return;
+      return false;
     } else {
       setPreference3Error(""); // 선택이 유효한 경우 에러 메시지 초기화
     }
+  };
 
-    // 회원가입 API 호출
-    const signUpResponse = await signUpApi(data);
+  const signUpHandler = async () => {
+    await validateSelectedMovie();
+    await validatePreference1();
+    await validatePreference2();
+    await validatePreference3();
 
-    if (signUpResponse === false) {
-      return;
-    } else {
-      alert("회원가입에 성공했습니다.");
-      axios.post("http://52.79.68.204:5001/userjoin", { user_email: email }).then((res) => {
-        console.log(res);
-      });
-      navigate("/");
+    // 로그 추가
+    console.log("posterError:", posterError);
+    console.log("preference1Error:", preference1Error);
+    console.log("preference2Error:", preference2Error);
+    console.log("preference3Error:", preference3Error);
+
+    // 모든 검증을 통과하면 회원가입을 시도
+    if (!posterError && !preference1Error && !preference2Error && !preference3Error) {
+      // 로그 추가
+      console.log("모든 유효성 검사 통과");
+
+      // 회원가입 API 호출
+      const signUpResponse = await signUpApi(data);
+
+      console.log(signUpResponse);
+
+      if (signUpResponse === false) {
+        return;
+      } else {
+        alert("회원가입에 성공했습니다.");
+        axios.post("http://52.79.68.204:5001/userjoin", { user_email: email }).then((res) => {
+          console.log(res);
+        });
+        navigate("/");
+      }
     }
   };
 
@@ -277,7 +353,6 @@ export default function SignUp(props) {
     setIsModalOpen(true);
   };
 
-  const selectedMovieId = moviePosters;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -292,11 +367,21 @@ export default function SignUp(props) {
     <div className="Wrap">
       <div className="form-wrapper">
         <h2>회원가입</h2>
-        <Box height={"50vh"}>
+        <Box>
           {currentStep === 1 && (
             <div>
               <Typography variant="subtitle1" fontSize="small"></Typography>
-              <TextField fullWidth label="이메일주소" type="email" variant="standard" onChange={(e) => setEmail(e.target.value)} placeholder="yourEmail@email.com" value={email} sx={{ mb: 2 }} />
+              <TextField
+                fullWidth
+                label="이메일주소"
+                type="email"
+                variant="standard"
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={validateEmail}
+                placeholder="yourEmail@email.com"
+                value={email}
+                sx={{ mb: 2 }}
+              />
               {emailError && (
                 <Typography color="error" fontSize="small">
                   {emailError}
@@ -308,6 +393,7 @@ export default function SignUp(props) {
                 type={showPassword ? "text" : "password"}
                 variant="standard"
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={validatePassword}
                 value={password}
                 sx={{ mb: 2 }}
                 InputProps={{
@@ -331,6 +417,7 @@ export default function SignUp(props) {
                 type={showPassword ? "text" : "password"}
                 variant="standard"
                 onChange={(e) => setPasswordCheck(e.target.value)}
+                onBlur={validatePasswordMatch}
                 value={passwordCheck}
                 sx={{ mb: 2 }}
               />
@@ -339,13 +426,13 @@ export default function SignUp(props) {
                   {passwordMatchError}
                 </Typography>
               )}
-              <TextField fullWidth label="이름" variant="standard" onChange={(e) => setName(e.target.value)} value={name} sx={{ mb: 2 }} />
+              <TextField fullWidth label="이름" variant="standard" onChange={(e) => setName(e.target.value)} onBlur={validateName} value={name} sx={{ mb: 2 }} />
               {nameError && (
                 <Typography color="error" fontSize="small">
                   {nameError}
                 </Typography>
               )}
-              <TextField fullWidth label="닉네임" variant="standard" onChange={(e) => setNickName(e.target.value)} value={nickname} sx={{ mb: 2 }} />
+              <TextField fullWidth label="닉네임" variant="standard" onChange={(e) => setNickName(e.target.value)} onBlur={validateNickname} value={nickname} sx={{ mb: 2 }} />
               {nicknameError && (
                 <Typography color="error" fontSize="small">
                   {nicknameError}
@@ -362,6 +449,7 @@ export default function SignUp(props) {
                   setGender(e.target.value);
                   setGenderError(""); // 선택할 때 에러 메시지 초기화
                 }}
+                onBlur={validateGender}
                 sx={{ mb: 2 }}
               >
                 <MenuItem value="0">선택</MenuItem>
@@ -385,6 +473,7 @@ export default function SignUp(props) {
                   setSelectedAge(e.target.value);
                   setAgeError(""); // 선택할 때 에러 메시지 초기화
                 }}
+                onBlur={validateAge}
                 sx={{ mb: 2 }}
               >
                 <MenuItem value="0">선택</MenuItem>
@@ -404,71 +493,93 @@ export default function SignUp(props) {
               </a>
             </div>
           )}
+
+          {/*............................................................................................*/}
           {currentStep === 2 && (
             <div>
-              <Button onClick={openPosterDialog} variant="outlined" sx={{ mb: 1 }} fullWidth>
-                인상 깊게 본 영화 포스터 선택
+              <Button onClick={openSearchModal} variant="outlined" sx={{ mb: 1 }}>
+                감명 깊게 본 영화를 선택하세요
               </Button>
-              <Dialog open={showPosterDialog} onClose={handlePosterClose} maxWidth="lg" fullWidth>
-                <DialogTitle>영화 포스터 선택</DialogTitle>
-                <DialogContent style={{ width: "100%", height: "500px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    {moviePosters.map((poster, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          margin: "4px",
-                          cursor: "pointer",
-                          flexBasis: "20%",
-                          flexGrow: 10,
-                        }}
-                      >
-                        <img src={poster.url} alt={`영화 포스터 ${index}`} onClick={() => handlePosterClick(poster.id)} style={{ width: "100%", height: "100%" }} />
-                      </div>
-                    ))}
-                  </div>
+
+              {/* 검색을 위한 모달 추가 */}
+              <Dialog open={showSearchModal} onClose={closeSearchModal} maxWidth="lg" fullWidth>
+                <DialogTitle>감명 깊게 본 영화</DialogTitle>
+                <DialogContent>
+                  <form onSubmit={handleFormSubmit} style={{ display: "flex", alignItems: "center" }}>
+                    <TextField
+                      fullWidth
+                      label="영화 이름을 입력하세요."
+                      variant="standard"
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={searchTerm}
+                      placeholder="영화 이름을 입력하세요."
+                      sx={{ flexGrow: 1, mr: 1, mb: 2 }}
+                    />
+                    <Button type="submit" variant="outlined">
+                      검색
+                    </Button>
+                  </form>
+
+                  {searchResults.length > 0 && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gridGap: "1em" }}>
+                      {searchResults.map((movie) => (
+                        <div key={movie.movie_id}>
+                          <img src={movie.poster_path} alt={movie.kr_title} style={{ width: "240px", maxHeight: "300px" }} onClick={() => handleMovieSelect(movie.movie_id)} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={closePosterDialog} color="primary">
+                  <Button onClick={closeSearchModal} color="primary">
                     닫기
                   </Button>
                 </DialogActions>
               </Dialog>
+
+              {/* 포스터 선택 관련 에러 메시지 */}
               {posterError && (
                 <Typography color="error" fontSize="small">
                   {posterError}
                 </Typography>
               )}
+
               <div>
                 {/* "포스터 보기" 버튼 */}
                 <Button onClick={openModal} variant="outlined" sx={{ mb: 5 }}>
                   {isPosterVisible ? "포스터 보기" : "포스터 보기 (+)"}
                 </Button>
 
-                {/* 포스터 모달 */}
-                <Dialog open={isModalOpen} onClose={closeModal} maxWidth="lg" fullWidth>
-                  <DialogTitle>영화 포스터</DialogTitle>
-                  <DialogContent>
-                    <img src={moviePosters.find((poster) => poster.id === selectedMovie)?.url} alt="선택한 영화 포스터" style={{ width: "100%", maxHeight: "500px" }} />
+                {/* 선택한 영화를 확인하는 모달 */}
+                <Dialog open={isModalOpen} onClose={closeModal} maxWidth="sm" fullWidth style={{ width: "auto", padding: "20px 50px" }}>
+                  <h4 style={{ textAlign: "center", fontSize: "25px", paddingTop: "10px" }}>{selectedMovie ? selectedMovie.kr_title : ""}</h4>
+                  <DialogContent style={{ textAlign: "center" }}>
+                    <img src={selectedMovie ? selectedMovie.poster_path : ""} alt="선택한 영화 포스터" style={{ width: "300px" }} />
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={closeModal} color="primary">
-                      닫기
+                      {" "}
+                      확인
                     </Button>
                   </DialogActions>
                 </Dialog>
               </div>
+              {/*............................................................................................*/}
 
               <Typography variant="subtitle1" fontSize="small">
                 영화 시청 우선 순위 첫번째
               </Typography>
-              <Select fullWidth variant="standard" value={preference_1} onChange={(e) => setPreference_1(e.target.value)} sx={{ mb: 6 }} disabled={!isMovieSelected}>
+              <Select
+                fullWidth
+                variant="standard"
+                value={preference_1}
+                onChange={(e) => {
+                  setPreference_1(e.target.value);
+                }}
+                sx={{ mb: 6 }}
+                disabled={!isMovieSelected}
+                onBlur={validatePreference1} // 포커스 아웃할 때 검증
+              >
                 <MenuItem value="0">선택</MenuItem>
                 <MenuItem value="1" disabled={selectedPreferences.includes("1")}>
                   감독
@@ -485,10 +596,11 @@ export default function SignUp(props) {
                   {preference1Error}
                 </Typography>
               )}
+
               <Typography variant="subtitle1" fontSize="small">
                 영화 시청 우선 순위 두번째
               </Typography>
-              <Select fullWidth variant="standard" value={preference_2} onChange={(e) => setPreference_2(e.target.value)} disabled={!isMovieSelected} sx={{ mb: 6 }}>
+              <Select fullWidth variant="standard" value={preference_2} onChange={(e) => setPreference_2(e.target.value)} disabled={!isMovieSelected} sx={{ mb: 6 }} onBlur={validatePreference2}>
                 <MenuItem value="0">선택</MenuItem>
                 <MenuItem value="1" disabled={selectedPreferences.includes("1")}>
                   감독
@@ -508,7 +620,7 @@ export default function SignUp(props) {
               <Typography variant="subtitle1" fontSize="small">
                 영화 시청 우선 순위 세번째
               </Typography>
-              <Select fullWidth variant="standard" value={preference_3} onChange={(e) => setPreference_3(e.target.value)} disabled={!isMovieSelected} sx={{ mb: 5 }}>
+              <Select fullWidth variant="standard" value={preference_3} onChange={(e) => setPreference_3(e.target.value)} disabled={!isMovieSelected} sx={{ mb: 5 }} onBlur={validatePreference3}>
                 <MenuItem value="0">선택</MenuItem>
                 <MenuItem value="1" disabled={selectedPreferences.includes("1")}>
                   감독

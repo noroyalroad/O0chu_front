@@ -32,9 +32,7 @@ const Commentlist = ({ movie_id }) => {
   return (
     <div>
       <ListGroup as="ol" numbered>
-        {/* <Commentitem item={comment} /> */}
         <CommentList2 movie={comment} />
-
         {comment.length === 0 ? <div>현재 작성 된 댓글이 없습니다.</div> : <Paging totalcount={total} onPageChagne={handlePageChange} />}
       </ListGroup>
     </div>

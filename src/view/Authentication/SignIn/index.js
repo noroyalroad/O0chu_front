@@ -15,6 +15,7 @@ export default function SignIn(props) {
   const [cookies, setCookies] = useCookies();
   const { setUser } = useUserStore();
   const dispatch = useDispatch();
+  const [error, setError] = useState("");
 
   const { setAuthView } = props;
   const navigate = useNavigate();
@@ -36,10 +37,6 @@ export default function SignIn(props) {
       email,
       password,
     };
-    // dispatch(loginUser(data)).then((res) => {
-    //   console.log(res);
-    //   localStorage.setItem("user", JSON.stringify(res));
-    // });
 
     try {
       const signInResponse = await signInApi(data);
@@ -50,29 +47,30 @@ export default function SignIn(props) {
       }
 
       if (signInResponse.result) {
-        console.log(signInResponse);
         const { user1 } = signInResponse;
 
         // 로그인 성공 메시지를 표시하거나 다른 동작을 수행할 수 있습니다.
         navigate("/"); // Redirect to the home page
       } else {
-        alert("로그인에 실패했습니다.");
-        console.log(signInResponse);
+        alert("이메일 혹은 패스워드를 잘못 입력하셨거나 등록되지 않은 이메일입니다.");
       }
 
       const { token, exprTime, user } = signInResponse.data;
       const expires = new Date();
       expires.setMilliseconds(expires.getMilliseconds() + exprTime);
 
+      console.log(exprTime);
+
       // 토큰을 로컬 스토리지에 저장
-      // localStorage.setItem("token", token);
+      localStorage.setItem("token", token);
+      localStorage.setItem("tokenExpiration", expires);
       // sessionStorage.setItem("token", token);
 
       setCookies("token", token, { expires });
       setUser(user);
     } catch (error) {
       console.error(error);
-      alert("로그인 중 오류가 발생했습니다.");
+      setError("로그인 중 오류가 발생했습니다.");
     }
   };
 
@@ -88,8 +86,10 @@ export default function SignIn(props) {
             <span
               onClick={handleLoginClick}
               style={{
+                fontFamily: "sans-serif",
                 color: "#00c03f",
                 cursor: "pointer",
+                marginLeft: "10px",
               }}
             >
               회원가입

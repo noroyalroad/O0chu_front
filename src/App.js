@@ -1,16 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import List from "./page/list";
-import Moviedetail from "./page/Moviedetail";
-import MovieList from "./page/MovieList";
-import Title from "./page/Title";
-import Fltest from "./page/Fltest";
-import Header from "./nav/Header";
 
+import Header from "./nav/Header";
 import NewMovie from "./new/NewMovie 2";
 import Search from "./nav/Search";
 import Footer from "./footer/Footer";
 import Searchlist from "./search/Searchlist";
-import SignUpPage from "./register/SignUpPage";
+
 import Sign from "./view/Authentication/SignIn";
 import SignUp from "./view/Authentication/SignUp";
 import Genreslist from "./genres/Genreslist";
@@ -19,11 +15,10 @@ import NicknameChange from "./view/Authentication/MyPage/NicknameChange";
 import PasswordChange from "./view/Authentication/MyPage/PasswordChange";
 import PreferenceChange from "./view/Authentication/MyPage/PreferenceChange";
 import MyPage from "./view/Authentication/MyPage";
-import Roadscroll from "./scrolltop/Roadscroll";
-import Withmovie from "./withmovie/Withmovie";
 import Newlist from "./new/Newlist";
 import Moviedetailinfo from "./detail/Moviedetailinfo";
 import DeleteUser from "./view/Authentication/MyPage/DeleteUser";
+import Wishlist from "./wishlist/Wishlist";
 
 function App() {
   return (
@@ -40,7 +35,7 @@ function App() {
         <Route path="/movies/list/newlsit" element={<NewMovie />}></Route>
         <Route path="/movies/list/serach" element={<Search />}></Route>
         <Route path="/movies/detail" element={<Moviedetailinfo />}></Route>
-
+        <Route path="/movies/wishlist" element={<Wishlist />}></Route>
         <Route path="/search/research/:search" element={<Searchlist />}></Route>
         <Route path="/login" element={<Sign />}></Route>
         <Route path="/register" element={<SignUp />}></Route>

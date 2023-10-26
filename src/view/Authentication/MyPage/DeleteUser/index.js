@@ -45,7 +45,7 @@ export default function DeleteUser() {
         alert("탈퇴가 완료되었습니다, 지금까지 오영추를 이용해주셔서 감사합니다.");
         Cookies.remove("token");
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        navigate("/list");
+        navigate("/");
       }
     } catch (error) {
       console.error(error);

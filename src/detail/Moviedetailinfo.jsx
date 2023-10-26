@@ -9,6 +9,8 @@ import Auth from "../hoc/auth";
 import Loading from "../loading/Loading";
 import Getstar from "./Getstar";
 import ScrollToTopButton from "../scrolltop/ScrolltoptoButton";
+import Addwish from "../wishlist/Addwish";
+import ScrollToQuestion from "../scrolltop/ScrolltoQuestion";
 
 const Moviedetailinfo = ({ movied }) => {
   const i = 0;
@@ -62,16 +64,23 @@ const Moviedetailinfo = ({ movied }) => {
   if (movies.length > 0 && movies[0].ott_logos) {
     ott = movies[0].ott_logos.split(",");
   }
-  if (!load && movies.length > 0 && movies[0].trailer_url === "") {
-    console.log("ye");
-  }
 
   return (
     <div className="detailedPageWrap marT_20">
-      <div className="posrtBox marR_20">{movies && movies.length > 0 && movies[0].poster_path ? <img src={movies[i].poster_path} alt="영화 포스터" /> : <h1>없음</h1>}</div>
+      <div className="posrtBox marR_20">
+        {movies && movies.length > 0 && movies[0].poster_path !== "default_poster_url_here" ? (
+          <img src={movies[i].poster_path} alt="영화 포스터" />
+        ) : (
+          <img src="/image/postrer.png" alt="영화 포스터" />
+        )}
+      </div>
       {movies.length > 0 ? (
         <div className="movieInfo">
-          <h4 className="movie_title">{movies[0].kr_title}</h4>
+          <h4 className="movie_title">
+            {movies[0].kr_title}
+            <Addwish movie_id={movies[i].movie_id} />
+          </h4>
+
           <p>
             <span>감독 : </span>
             <span>{movies[i].directors}</span>
@@ -153,7 +162,10 @@ const Moviedetailinfo = ({ movied }) => {
           )}
           {/* <UserRatingBt user_id={email} movie_id={movies[i].movie_id} korean_title={movies[i].kr_title} /> */}
           <Getstar user_email={email} movie_id={movies[i].movie_id} />
-          <ScrollToTopButton />
+          <div className="scroll-to-div">
+            <ScrollToQuestion />
+            <ScrollToTopButton />
+          </div>
         </div>
       ) : (
         <h1>
