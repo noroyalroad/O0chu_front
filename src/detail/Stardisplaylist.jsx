@@ -19,7 +19,7 @@ function StarRatingList({ rating, onStarClick, movie_id }) {
           &#9733; {/* 별 이모지 */}
         </FaStar>
       ))}
-      {rating === 0 ? <span className="marL_10">별점이 없습니다.</span> : <h3 style={{ color: "#fff", textAlign: "center" }}>별점: {rating} / 5</h3>}
+      <h3 style={{ color: "#fff", textAlign: "center" }}>별점: {rating} / 5</h3>
     </p>
   );
 }

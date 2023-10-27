@@ -18,9 +18,11 @@ export default function (SpecificComponent, option, adminRoute = null) {
       const currentTime = new Date().getTime();
       if (currentTime > tokenExpiration) {
         // 유효 기간이 만료된 토큰을 삭제
+        localStorage.clear();
+        alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
+        window.location.reload();
         localStorage.removeItem("token");
         localStorage.removeItem("tokenExpiration");
-        localStorage.clear();
       }
     }
 

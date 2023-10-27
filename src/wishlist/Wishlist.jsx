@@ -7,6 +7,7 @@ import Header from "../nav/Header";
 import ScrollToTopButton from "../scrolltop/ScrolltoptoButton";
 import Footer from "../footer/Footer";
 import Auth from "../hoc/auth";
+import ScrollToQuestion from "../scrolltop/ScrolltoQuestion";
 
 const Wishlist = () => {
   const [wishlist, setwishlist] = useState([]);
@@ -30,7 +31,11 @@ const Wishlist = () => {
     <div>
       <Header />
       <Genresitemlist list={wishlist} />
-      <ScrollToTopButton />
+      <div className="scroll-to-div">
+        <ScrollToQuestion />
+        <ScrollToTopButton />
+      </div>
+
       <Footer />
     </div>
   );
