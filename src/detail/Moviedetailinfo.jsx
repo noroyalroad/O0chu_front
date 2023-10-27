@@ -60,9 +60,11 @@ const Moviedetailinfo = ({ movied }) => {
   };
 
   let ott = [];
+  let ott_name = [];
 
   if (movies.length > 0 && movies[0].ott_logos) {
     ott = movies[0].ott_logos.split(",");
+    ott_name = movies[0].available_on_ott.split(",");
   }
 
   return (
@@ -112,7 +114,7 @@ const Moviedetailinfo = ({ movied }) => {
             {ott.length > 0 ? (
               <p className="ottList">
                 {ott.map((item, index) => {
-                  return <img key={index} className="marR_5" src={item} alt="ott 로고" />;
+                  return <img key={index} className="marR_5" src={item} alt="ott 로고" title={ott_name[index]} />;
                 })}
               </p>
             ) : (

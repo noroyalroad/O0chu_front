@@ -5,7 +5,6 @@ import { Box, Button, Card, TextField, Typography, Select, MenuItem, Dialog, Dia
 import { NextClickApi, signUpApi } from "../../../api";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { api } from "../../../config/api";
 
 export default function SignUp(props) {
   // 회원가입 폼 입력값과 오류 상태 변수
@@ -75,7 +74,7 @@ export default function SignUp(props) {
   const handleMovieSearch = async () => {
     if (searchTerm) {
       try {
-        const response = await axios.get(`${api}/api/movie/search/${searchTerm}`);
+        const response = await axios.get(`/api/movie/search/${searchTerm}`);
         console.log(`Requesting: /movie/search/${searchTerm}`);
         if (response.data.length > 0) {
           setSearchResults(response.data);
@@ -156,12 +155,16 @@ export default function SignUp(props) {
 
     if (!email) {
       setEmailError("이메일 주소를 입력해주세요.");
+      return false;
     } else if (!emailRegex.test(email)) {
       setEmailError("유효한 이메일 형식을 입력해주세요.");
+      return false;
     } else if (nextClickResponse.message === "Email already in use") {
       setEmailError("중복된 이메일입니다.");
+      return false;
     } else {
       setEmailError("");
+      return true;
     }
   };
 
@@ -173,12 +176,16 @@ export default function SignUp(props) {
     // 닉네임 유효성 검사
     if (!nickname) {
       setNickNameError("닉네임을 입력해주세요.");
+      return false;
     } else if (!nicknameRegex.test(nickname)) {
       setNickNameError("1글자 이상 9글자 미만으로 입력해주세요.");
+      return false;
     } else if (nextClickResponse.message === "Nickname already in use") {
       setNickNameError("중복된 닉네임입니다.");
+      return false;
     } else {
       setNickNameError("");
+      return true;
     }
   };
 
@@ -188,10 +195,13 @@ export default function SignUp(props) {
     // 이름 유효성 검사
     if (!name) {
       setNameError("이름을 입력해주세요.");
+      return false;
     } else if (!nameRegex.test(name) || name.length < 1 || name.length >= 5) {
       setNameError("1글자 이상 5글자 미만 한글만 입력 가능합니다.");
+      return false;
     } else {
       setNameError("");
+      return true;
     }
   };
 
@@ -201,10 +211,13 @@ export default function SignUp(props) {
     // 비밀번호 유효성 검사
     if (!password) {
       setPasswordError("비밀번호를 입력해주세요.");
+      return false;
     } else if (!passwordRegex.test(password)) {
       setPasswordError("비밀번호는 최소 8자 이상, 영문자와 숫자, 특수 문자를 포함해야 합니다.");
+      return false;
     } else {
       setPasswordError("");
+      return true;
     }
   };
 
@@ -212,41 +225,48 @@ export default function SignUp(props) {
     // 비밀번호 일치 여부 검사
     if (!password) {
       setPasswordMatchError("비밀번호를 입력해주세요.");
+      return false;
     } else if (password !== passwordCheck) {
       setPasswordMatchError("비밀번호가 일치하지 않습니다.");
+      return false;
     } else {
       setPasswordMatchError("");
+      return true;
     }
   };
 
   const validateGender = () => {
     if (gender === "0") {
       setGenderError("성별을 선택해주세요."); // Set the error message
+      return false;
     } else {
       setGenderError(""); // Clear the error message if gender is selected
+      return true;
     }
   };
 
   const validateAge = () => {
     if (selectedAge === "0") {
       setAgeError("연령대를 선택해주세요."); // Set the error message
+      return false;
     } else {
       setAgeError(""); // Clear the error message if age is selected
+      return true;
     }
   };
 
   // 회원가입 두번째 단계로 이동
   const handleNextClick = async () => {
-    await validateEmail();
-    validatePassword();
-    validatePasswordMatch();
-    validateName();
-    await validateNickname();
-    validateGender();
-    validateAge();
+    const isValidEmail = await validateEmail();
+    const isValidPassword = validatePassword();
+    const isValidPasswordMatch = validatePasswordMatch();
+    const isValidName = validateName();
+    const isValidNickname = await validateNickname();
+    const isValidGender = validateGender();
+    const isValidAge = validateAge();
 
     // 모든 필수 정보가 올바르게 입력되었을 때 다음 단계로 이동
-    if (currentStep === 1 && !emailError && !passwordError && !passwordMatchError && !nameError && !nicknameError && !genderError && !ageError) {
+    if (currentStep === 1 && isValidEmail && isValidPassword && isValidPasswordMatch && isValidName && isValidNickname && isValidGender && isValidAge) {
       setCurrentStep(2);
     }
   };

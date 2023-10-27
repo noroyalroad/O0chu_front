@@ -30,7 +30,7 @@ function List() {
       <div className="listWrap webSize">
         <h5 className="cateTitle">New</h5>
         <NewMovie></NewMovie>
-        <h5 className="cateTitle marT_20">{nickname}님을 위한 영화</h5>
+        {user && user.userData && user.userData.isAuth ? <h5 className="cateTitle marT_20">{nickname}님을 위한 영화</h5> : <h5 className="cateTitle marT_20">추천 영화</h5>}
         <Suggestion />
         <div className="scroll-to-div">
           <ScrollToQuestion />
